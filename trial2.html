@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>N-Back Test</title>
+        <style>
+            body {
+                text-align: center;
+                font-family: Arial, Helvetica, sans-serif;
+                font-weight: bold;
+            }
+
+            #stimulus {
+               font-size: 5em;
+               margin: 0.5em;
+               min-height: 1.2em;
+            }
+
+            .caption {
+               font-size: 1.2em;
+               margin: 1em;
+               white-space: pre-line;
+            }
+
+            .title {
+               font-size: 2.5em;
+               margin: 0.5em;
+            }
+
+            .subtitle {
+                font-size: 2em;
+                margin: 0.5em;
+            }
+        </style>
+    </head>
+    <body>
+        <p class="title">Leo's Amazing Epic N-Back Test</p>
+        <p class="subtitle">Trial 2 - Weekday Afternoon</p>
+        <p class="caption">Press space or tap the screen when the letter matches the one 2 steps earlier</p>
+        <hr>
+        <p id="stimulus">-</p>
+        <p class="caption" id="info">Press space or tap the screen to start</p>
+        
+        <script>
+            var testRunning = false;
+            var infoCaption = document.getElementById("info");
+            var stimulus = document.getElementById("stimulus");
+            var sequence = "TNTNIFIQFGQGOBFBIHYHYMYZCFCDYDETAEADAUPLTRQCQZFPFP";
+            var n = 2;
+            var stimulusInterval = 2000;
+            var waitInterval = 1000;
+            var correct = 0;
+            var wrong = 0;
+            var missedCorrect = 0;
+            var stimulusIndex = 0;
+            var canGuess = false;
+
+            function startTest() {
+                testRunning = true;
+                infoCaption.textContent = "1/" + sequence.length;
+                showStimulus();
+            }
+
+            function showStimulus() {
+                canGuess = true;
+                stimulus.textContent = sequence[stimulusIndex];
+                infoCaption.textContent = stimulusIndex + 1 + "/" + sequence.length;
+
+                setTimeout(() => {
+                    if (canGuess && stimulusIndex > 1 && sequence[stimulusIndex] == sequence[stimulusIndex - 2]) {
+                        missedCorrect++;
+                        console.log("Missed Correct");
+                    } else if (canGuess && stimulusIndex > 1 && sequence[stimulusIndex] != sequence[stimulusIndex - 2]) {
+                        correct++;
+                        console.log("Correct");
+                    }
+
+                    canGuess = false;
+
+                    if (stimulusIndex < sequence.length - 1) {
+                        stimulus.textContent = "";
+
+                        setTimeout(() => {
+                            stimulusIndex++;
+                            
+                            showStimulus();
+                        }, waitInterval);
+                    } else {
+                        stimulus.textContent = ":)";
+                        infoCaption.textContent = "Correct: " + correct + "\nWrong: " + wrong + "\nMissed Correct: " + missedCorrect + "\nAccuracy: " + (correct / (sequence.length - 2) * 100) + "%"
+                    }
+                }, stimulusInterval);
+            }
+
+            function checkMatch() {
+                if (sequence[stimulusIndex] == sequence[stimulusIndex - 2]) {
+                    correct++;
+                    console.log("Correct");
+                } else if (sequence[stimulusIndex] != sequence[stimulusIndex - 2]) {
+                    wrong++;
+                    console.log("Wrong");
+                }
+            }
+
+            window.addEventListener("click", event => {
+                if (!testRunning) {
+                    startTest();
+                } else if (canGuess && stimulusIndex > 1) {
+                    canGuess = false;
+                    checkMatch();
+                }
+            });
+
+            window.addEventListener("keydown", event => {
+                if (event.key == " " && !event.repeat) {
+                    if (!testRunning) {
+                        startTest();
+                    } else if (canGuess && stimulusIndex > 1) {
+                        canGuess = false;
+                        checkMatch();
+                    }
+                }
+            });
+        </script>
+    </body>
+</html>
