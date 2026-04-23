@@ -48,8 +48,8 @@
             var stimulus = document.getElementById("stimulus");
             var sequence = "TOTUCUWISXSXEQCAEKYZYDLXKXKXTXQBMEMCMKDAEXEXLXZNZV";
             var n = 2;
-            var stimulusInterval = 2000;
-            var waitInterval = 1000;
+            var stimulusInterval = 1000;
+            var waitInterval = 750;
             var correct = 0;
             var wrong = 0;
             var missedCorrect = 0;
@@ -102,6 +102,15 @@
                     console.log("Wrong");
                 }
             }
+
+            window.addEventListener("touchstart", event => {
+                if (!testRunning) {
+                    startTest();
+                } else if (canGuess && stimulusIndex > 1) {
+                    canGuess = false;
+                    checkMatch();
+                }
+            });
 
             window.addEventListener("click", event => {
                 if (!testRunning) {
