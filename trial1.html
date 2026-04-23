@@ -103,6 +103,15 @@
                 }
             }
 
+            window.addEventListener("touchstart", event => {
+                if (!testRunning) {
+                    startTest();
+                } else if (canGuess && stimulusIndex > 1) {
+                    canGuess = false;
+                    checkMatch();
+                }
+            });
+            
             window.addEventListener("click", event => {
                 if (!testRunning) {
                     startTest();
